@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>JadeView 性能测试面板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Segoe UI", sans-serif; background: #f0f2f5; padding: 20px; }
+h1 { font-size: 18px; margin-bottom: 16px; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+button { padding: 8px 18px; border: 1px solid #4a90d9; border-radius: 4px; background: #4a90d9; color: #fff; cursor: pointer; font-size: 13px; }
+button:hover { background: #3a7bc8; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.all { background: #2e7d32; border-color: #2e7d32; }
+button.all:hover { background: #256427; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 16px; }
+th { background: #f5f5f5; padding: 8px 12px; text-align: left; font-size: 12px; color: #666; border-bottom: 1px solid #e0e0e0; }
+td { padding: 8px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+td.num { font-family: "Cascadia Code", Consolas, monospace; text-align: right; }
+.status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status.pending { background: #bbb; }
+.status.running { background: #ff9800; animation: pulse .8s infinite; }
+.status.done { background: #4caf50; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+#progress { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 10px; font-family: Consolas, monospace; font-size: 11px; height: 180px; overflow-y: auto; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>JadeView 2.0 性能基准测试</h1>
+
+<div class="controls">
+  <button onclick="runBench('bench:windows')" id="btn-win">窗口创建/销毁</button>
+  <button onclick="runBench('bench:ipc_throughput')" id="btn-ipc">IPC 吞吐</button>
+  <button onclick="runBench('bench:js_exec')" id="btn-js">JS 执行</button>
+  <button onclick="runBench('bench:pipeline')" id="btn-pipe">综合流水线</button>
+  <button class="all" onclick="runAll()" id="btn-all">运行全部</button>
+</div>
+
+<table>
+  <thead>
+    <tr><th>测试项</th><th>次数</th><th style="text-align:right">平均(ms)</th><th style="text-align:right">最小(ms)</th><th style="text-align:right">最大(ms)</th><th style="text-align:right">总耗时(ms)</th><th>状态</th></tr>
+  </thead>
+  <tbody id="results">
+    <tr id="row-windows"><td><span class="status pending" id="s-windows"></span>窗口创建/销毁</td><td id="c-windows">-</td><td class="num" id="avg-windows">-</td><td class="num" id="min-windows">-</td><td class="num" id="max-windows">-</td><td class="num" id="total-windows">-</td><td id="st-windows">待运行</td></tr>
+    <tr id="row-ipc"><td><span class="status pending" id="s-ipc"></span>IPC 吞吐 (P→JS)</td><td id="c-ipc">-</td><td class="num" id="avg-ipc">-</td><td class="num" id="min-ipc">-</td><td class="num" id="max-ipc">-</td><td class="num" id="total-ipc">-</td><td id="st-ipc">待运行</td></tr>
+    <tr id="row-ipc-rtt"><td><span class="status pending" id="s-ipc-rtt"></span>IPC 往返 RTT</td><td id="c-ipc-rtt">-</td><td class="num" id="avg-ipc-rtt">-</td><td class="num" id="min-ipc-rtt">-</td><td class="num" id="max-ipc-rtt">-</td><td class="num" id="total-ipc-rtt">-</td><td id="st-ipc-rtt">待运行</td></tr>
+    <tr id="row-js"><td><span class="status pending" id="s-js"></span>JS 执行</td><td id="c-js">-</td><td class="num" id="avg-js">-</td><td class="num" id="min-js">-</td><td class="num" id="max-js">-</td><td class="num" id="total-js">-</td><td id="st-js">待运行</td></tr>
+    <tr id="row-pipeline"><td><span class="status pending" id="s-pipeline"></span>综合流水线</td><td id="c-pipeline">-</td><td class="num" id="avg-pipeline">-</td><td class="num" id="min-pipeline">-</td><td class="num" id="max-pipeline">-</td><td class="num" id="total-pipeline">-</td><td id="st-pipeline">待运行</td></tr>
+  </tbody>
+</table>
+
+<div id="progress"></div>
+
+<script>
+const progEl = document.getElementById('progress');
+
+function plog(msg) {
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  progEl.textContent += `[${t}] ${msg}\n`;
+  progEl.scrollTop = progEl.scrollHeight;
+}
+
+function setStatus(key, status, text) {
+  document.getElementById(`s-${key}`).className = `status ${status}`;
+  if (text) document.getElementById(`st-${key}`).textContent = text;
+}
+
+function fillRow(key, data) {
+  document.getElementById(`c-${key}`).textContent = data.count;
+  document.getElementById(`avg-${key}`).textContent = data.avg;
+  document.getElementById(`min-${key}`).textContent = data.min;
+  document.getElementById(`max-${key}`).textContent = data.max;
+  document.getElementById(`total-${key}`).textContent = data.total;
+  setStatus(key, 'done', '完成');
+}
+
+// 监听 Python 推送的基准测试结果
+jade.on('bench-result', (data) => {
+  plog(`[${data.key}] 完成: count=${data.count}, avg=${data.avg}ms, total=${data.total}ms`);
+  fillRow(data.key, data);
+});
+
+jade.on('bench-progress', (data) => {
+  plog(data.message);
+});
+
+// channel → HTML row key 映射
+const channelKeyMap = {
+  'bench:windows': 'windows',
+  'bench:ipc_throughput': 'ipc',
+  'bench:js_exec': 'js',
+  'bench:pipeline': 'pipeline',
+};
+
+async function runBench(channel) {
+  const key = channelKeyMap[channel] || channel.split(':')[1];
+  setStatus(key, 'running', '运行中...');
+  plog(`启动测试: ${channel}`);
+  try {
+    await jade.invoke(channel, '');
+  } catch(e) {
+    plog(`错误: ${e.message}`);
+    setStatus(key, 'pending', '失败');
+  }
+}
+
+async function runAll() {
+  const tests = ['bench:windows', 'bench:ipc_throughput', 'bench:js_exec', 'bench:pipeline'];
+  for (const t of tests) {
+    await runBench(t);
+    // 等结果推送
+    await new Promise(r => setTimeout(r, 500));
+  }
+  plog('=== 全部测试完成 ===');
+}
+
+// IPC RTT: 前端接收 ping, 立即 pong 回去
+jade.on('bench-ping', async (data) => {
+  await jade.invoke('bench:pong', JSON.stringify(data));
+});
+
+plog('性能测试面板已加载，点击按钮开始测试');
+</script>
+</body>
+</html>

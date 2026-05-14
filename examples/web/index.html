@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>JadeView 2.0 SDK 全功能演示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Segoe UI", sans-serif; background: #f0f2f5; color: #333; padding: 16px; }
+h1 { font-size: 20px; margin-bottom: 12px; color: #1a1a2e; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+.card { background: #fff; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.card h2 { font-size: 14px; color: #555; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+.btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+button { padding: 5px 12px; border: 1px solid #d0d5dd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; transition: all .15s; }
+button:hover { background: #e8f0fe; border-color: #4a90d9; }
+button:active { background: #d2e3fc; }
+button.primary { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+button.primary:hover { background: #3a7bc8; }
+button.danger { color: #d32f2f; border-color: #d32f2f; }
+button.danger:hover { background: #fde8e8; }
+#log { margin-top: 12px; background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 10px; font-family: "Cascadia Code", Consolas, monospace; font-size: 11px; height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+.log-time { color: #6c7086; }
+.log-event { color: #89b4fa; }
+.log-data { color: #a6e3a1; }
+.log-error { color: #f38ba8; }
+select, input[type=text], input[type=number] { padding: 4px 8px; border: 1px solid #d0d5dd; border-radius: 4px; font-size: 12px; }
+.row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+label { font-size: 12px; color: #666; min-width: 60px; }
+</style>
+</head>
+<body>
+<h1>JadeView 2.0 SDK - 全功能演示面板</h1>
+<div class="grid">
+
+<!-- 窗口管理 -->
+<div class="card">
+  <h2>窗口管理</h2>
+  <div class="btn-group">
+    <button onclick="invoke('win:create')">创建新窗口</button>
+    <button onclick="invoke('win:create_borderless')">无边框窗口</button>
+    <button onclick="invoke('win:set_title')">修改标题</button>
+    <button onclick="invoke('win:set_size')">调整大小</button>
+    <button onclick="invoke('win:set_position')">设置位置</button>
+    <button onclick="invoke('win:minimize')">最小化</button>
+    <button onclick="invoke('win:toggle_maximize')">切换最大化</button>
+    <button onclick="invoke('win:fullscreen')">全屏切换</button>
+    <button onclick="invoke('win:always_on_top')">置顶切换</button>
+    <button onclick="invoke('win:set_enabled')">禁用/启用</button>
+    <button onclick="invoke('win:hide_show')">隐藏/显示</button>
+    <button onclick="invoke('win:focus')">获取焦点</button>
+    <button onclick="invoke('win:redraw')">请求重绘</button>
+    <button class="danger" onclick="invoke('win:close_last')">关闭最后窗口</button>
+  </div>
+</div>
+
+<!-- 主题与外观 -->
+<div class="card">
+  <h2>主题与外观</h2>
+  <div class="btn-group">
+    <button onclick="invoke('theme:light')">亮色主题</button>
+    <button onclick="invoke('theme:dark')">暗色主题</button>
+    <button onclick="invoke('theme:system')">跟随系统</button>
+  </div>
+  <div class="btn-group" style="margin-top:6px;">
+    <button onclick="invoke('backdrop:mica')">Mica</button>
+    <button onclick="invoke('backdrop:micaAlt')">Mica Alt</button>
+    <button onclick="invoke('backdrop:acrylic')">Acrylic</button>
+  </div>
+  <div class="row" style="margin-top:6px;">
+    <label>背景色</label>
+    <input type="text" id="bgColor" value="#e8f0fe" style="width:80px;">
+    <button onclick="invoke('theme:bgcolor', document.getElementById('bgColor').value)">应用</button>
+  </div>
+</div>
+
+<!-- 边框样式 -->
+<div class="card">
+  <h2>边框样式 / 打印</h2>
+  <div class="btn-group">
+    <button onclick="invoke('frame:set_style', 'normal')">Normal</button>
+    <button onclick="invoke('frame:set_style', 'no-titlebar')">No Titlebar</button>
+    <button onclick="invoke('frame:set_style', 'borderless')">Borderless</button>
+    <button onclick="invoke('frame:set_style', 'title-overlay')">Title Overlay</button>
+  </div>
+  <div class="btn-group" style="margin-top:8px;">
+    <button class="primary" onclick="invoke('frame:open_overlay_demo')">打开 Overlay 演示窗口</button>
+    <button onclick="invoke('frame:print')">🖨️ 打印页面</button>
+  </div>
+</div>
+
+<!-- WebView 操作 -->
+<div class="card">
+  <h2>WebView 操作</h2>
+  <div class="row">
+    <input type="text" id="navUrl" value="https://example.com" style="flex:1;">
+    <button onclick="invoke('webview:navigate', document.getElementById('navUrl').value)">导航</button>
+  </div>
+  <div class="btn-group">
+    <button onclick="invoke('webview:reload')">刷新页面</button>
+    <button onclick="invoke('webview:exec_js')">执行JS</button>
+    <button onclick="invoke('webview:zoom_in')">放大 150%</button>
+    <button onclick="invoke('webview:zoom_reset')">缩放 100%</button>
+    <button onclick="invoke('webview:content_protect')">内容保护切换</button>
+  </div>
+</div>
+
+<!-- IPC 通信 -->
+<div class="card">
+  <h2>IPC 通信</h2>
+  <div class="row">
+    <input type="text" id="ipcMsg" value="Hello from Frontend!" style="flex:1;">
+    <button class="primary" onclick="invoke('ipc:send', document.getElementById('ipcMsg').value)">发送到Python</button>
+  </div>
+  <div class="btn-group">
+    <button onclick="invoke('ipc:ping')">Ping 测试</button>
+    <button onclick="invoke('ipc:get_info')">获取系统信息</button>
+    <button onclick="invoke('win:create')">打开IPC测试页</button>
+  </div>
+</div>
+
+<!-- 对话框 (通过 Python SDK 调用 DLL, DLL callback 待修复, 暂只能弹出) -->
+<div class="card">
+  <h2>对话框</h2>
+  <div class="btn-group">
+    <button onclick="invoke('dialog:open_file')">打开文件</button>
+    <button onclick="invoke('dialog:open_files')">多选文件</button>
+    <button onclick="invoke('dialog:open_folder')">选择文件夹</button>
+    <button onclick="invoke('dialog:save')">保存文件</button>
+    <button onclick="invoke('dialog:msg_info')">信息提示</button>
+    <button onclick="invoke('dialog:msg_warning')">警告提示</button>
+    <button onclick="invoke('dialog:msg_error')">错误提示</button>
+    <button onclick="invoke('dialog:error_box')">ErrorBox</button>
+  </div>
+</div>
+
+<!-- 系统托盘 -->
+<div class="card">
+  <h2>系统托盘</h2>
+  <div class="btn-group">
+    <button onclick="invoke('tray:create')">创建托盘</button>
+    <button onclick="invoke('tray:set_tooltip')">设置提示文本</button>
+    <button onclick="invoke('tray:set_menu')">设置菜单</button>
+    <button onclick="invoke('tray:toggle_visible')">显示/隐藏</button>
+    <button class="danger" onclick="invoke('tray:destroy')">销毁托盘</button>
+  </div>
+</div>
+
+<!-- 系统通知 -->
+<div class="card">
+  <h2>系统通知</h2>
+  <div class="btn-group">
+    <button onclick="invoke('notify:basic')">基本通知</button>
+    <button onclick="invoke('notify:with_buttons')">带按钮通知</button>
+    <button onclick="invoke('notify:with_action')">带动作通知</button>
+  </div>
+</div>
+
+<!-- 工具函数 -->
+<div class="card">
+  <h2>工具函数</h2>
+  <div class="btn-group">
+    <button onclick="invoke('tools:versions')">版本信息</button>
+    <button onclick="invoke('tools:paths')">系统路径</button>
+    <button onclick="invoke('tools:locale')">系统语言</button>
+    <button onclick="invoke('tools:displays')">显示器信息</button>
+    <button onclick="invoke('tools:win_count')">窗口数量</button>
+    <button onclick="invoke('tools:is_win11')">是否Win11</button>
+  </div>
+  <div class="btn-group" style="margin-top:6px;">
+    <button onclick="invoke('tools:yaml_set')">YAML写入</button>
+    <button onclick="invoke('tools:yaml_get')">YAML读取</button>
+    <button onclick="invoke('tools:hotkey_reg')">注册热键 Ctrl+Alt+K</button>
+    <button onclick="invoke('tools:hotkey_unreg')">注销热键</button>
+  </div>
+</div>
+
+<!-- 性能测试 -->
+<div class="card">
+  <h2>性能测试</h2>
+  <div class="btn-group">
+    <button class="primary" onclick="invoke('bench:open_window')">打开性能测试面板</button>
+  </div>
+</div>
+
+</div>
+
+<!-- 事件日志 -->
+<div id="log"></div>
+
+<script>
+const logEl = document.getElementById('log');
+
+function log(type, msg) {
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  const cls = type === 'error' ? 'log-error' : type === 'event' ? 'log-event' : 'log-data';
+  logEl.innerHTML += `<span class="log-time">[${t}]</span> <span class="${cls}">${msg}</span>\n`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// jade.invoke 调用 Python 端注册的 IPC handler
+async function invoke(channel, data) {
+  try {
+    const result = await jade.invoke(channel, data || '');
+    if (result) log('data', `← ${channel}: ${typeof result === 'object' ? JSON.stringify(result) : result}`);
+  } catch(e) {
+    log('error', `${channel} 错误: ${e.message}`);
+  }
+}
+
+// 监听 Python → 前端推送
+jade.on('event-log', (data) => {
+  log('event', data.message || JSON.stringify(data));
+});
+
+jade.on('js-result', (data) => {
+  log('data', `JS执行结果: ${JSON.stringify(data)}`);
+});
+
+log('data', '面板已加载，等待操作...');
+</script>
+</body>
+</html>

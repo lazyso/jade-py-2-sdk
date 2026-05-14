@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JadeView Desktop</title>
+    <style>
+        :root {
+            --accent-color: #007AFF;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --titlebar-height: 38px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+        }
+
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        /* 标题栏 */
+        .custom-titlebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--titlebar-height);
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 9999;
+            -webkit-app-region: drag;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .titlebar-content {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        .window-controls-placeholder {
+            width: 70px;
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+        .dot.close { background: #FF5F57; }
+        .dot.min { background: #FFBD2E; }
+        .dot.max { background: #28C840; }
+
+        /* 背景 */
+        .wallpaper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&q=80&w=2070') center/cover no-repeat;
+            z-index: -1;
+            transform: scale(1.05);
+            filter: brightness(0.7);
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: var(--titlebar-height);
+        }
+
+        .glass-panel {
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+            background: var(--accent-color);
+            color: white;
+            font-weight: 500;
+            -webkit-app-region: no-drag;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .settings-section {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .settings-section h2 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 6px;
+        }
+
+        .setting-group label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            width: 120px;
+            text-align: left;
+        }
+
+        .setting-group input[type="text"],
+        .setting-group input[type="number"] {
+            flex: 1;
+            padding: 4px 8px;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .setting-group input[type="color"] {
+            width: 60px;
+            height: 30px;
+            padding: 2px;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .setting-group input[type="range"] {
+            flex: 1;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .color-preview {
+            width: 60px;
+            height: 30px;
+            border-radius: 5px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .setting-group input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+        }
+
+        .btn-apply {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .presets {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .presets p {
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .btn.preset {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 3px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn.preset:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 标题栏区 -->
+    <header class="custom-titlebar">
+        <div class="window-controls-placeholder">
+            <div class="dot close"></div>
+            <div class="dot min"></div>
+            <div class="dot max"></div>
+        </div>
+        <div class="titlebar-content">JadeView Pro</div>
+        <div style="width: 70px;"></div>
+    </header>
+
+    <div class="wallpaper"></div>
+
+    <div class="container">
+        <main class="glass-panel">
+            <h1>JadeView</h1>
+            <p>基于 WebView2 与 Rust 构建的下一代跨平台桌面应用架构。</p>
+
+            <!-- 覆盖层样式设置区 -->
+            <div class="settings-section">
+                <h2>标题栏覆盖层样式设置</h2>
+
+                <div class="setting-group">
+                    <label for="heightInput">按钮高度 (像素):</label>
+                    <input type="number" id="heightInput" value="32" min="20" max="100" step="1">
+                </div>
+
+                <div class="setting-group">
+                    <label for="iconColorInput">图标颜色:</label>
+                    <input type="color" id="iconColorInput" value="#E0E0E0">
+                </div>
+
+                <div class="setting-group">
+                    <label for="hoverBgInput">悬浮背景色:</label>
+                    <input type="color" id="hoverBgInput" value="#333333" onchange="updateColorPreview()">
+                </div>
+
+                <div class="setting-group">
+                    <label for="hoverAlphaInput">悬浮背景透明度:</label>
+                    <input type="range" id="hoverAlphaInput" min="0" max="100" value="100" oninput="updateColorPreview()">
+                    <div class="color-preview" id="hoverBgPreview"></div>
+                </div>
+
+                <button class="btn btn-apply" onclick="applyOverlayStyle()">应用样式</button>
+
+                <div class="presets">
+                    <p>预设样式：</p>
+                    <button class="btn preset" onclick="usePreset('dark')">深色主题</button>
+                    <button class="btn preset" onclick="usePreset('light')">浅色主题</button>
+                    <button class="btn preset" onclick="usePreset('blue')">蓝色主题</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+const presets = {
+    dark:  { height: 32, icon_color: "#E0E0E0", hover_bg: "#333333", hover_alpha: 100 },
+    light: { height: 32, icon_color: "#333333", hover_bg: "#E0E0E0", hover_alpha: 100 },
+    blue:  { height: 36, icon_color: "#FFFFFF", hover_bg: "#007AFF", hover_alpha: 100 },
+};
+
+function hexToRgb(hex) {
+    const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : null;
+}
+
+function colorWithAlpha(hex, alphaPercent) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    const a = Math.max(0, Math.min(100, alphaPercent)) / 100;
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
+}
+
+function updateColorPreview() {
+    const hex = document.getElementById('hoverBgInput').value;
+    const alpha = parseInt(document.getElementById('hoverAlphaInput').value);
+    const preview = document.getElementById('hoverBgPreview');
+    preview.style.background = colorWithAlpha(hex, alpha);
+}
+
+async function applyOverlayStyle() {
+    const height = parseInt(document.getElementById('heightInput').value);
+    const iconColor = document.getElementById('iconColorInput').value;
+    const hoverBg = document.getElementById('hoverBgInput').value;
+    const hoverAlpha = parseInt(document.getElementById('hoverAlphaInput').value);
+    const hoverBgRgba = colorWithAlpha(hoverBg, hoverAlpha);
+
+    try {
+        const result = await jade.invoke('setTitlebarOverlayStyle', JSON.stringify({
+            height: height,
+            icon_color: iconColor,
+            hover_bg: hoverBgRgba
+        }));
+        console.log('Overlay style applied:', result);
+    } catch (e) {
+        console.error('Error applying style:', e);
+    }
+}
+
+function usePreset(name) {
+    const p = presets[name];
+    if (!p) return;
+    document.getElementById('heightInput').value = p.height;
+    document.getElementById('iconColorInput').value = p.icon_color;
+    document.getElementById('hoverBgInput').value = p.hover_bg;
+    document.getElementById('hoverAlphaInput').value = p.hover_alpha;
+    updateColorPreview();
+    applyOverlayStyle();
+}
+
+document.addEventListener('DOMContentLoaded', updateColorPreview);
+</script>
+
+</body>
+</html>

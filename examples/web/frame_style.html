@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>边框样式演示</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Segoe UI", sans-serif; background: transparent; color: #333; }
+
+/* 自定义标题栏区域 (title-overlay 模式下可拖动) */
+.titlebar {
+  -webkit-app-region: drag;
+  app-region: drag;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  user-select: none;
+}
+.titlebar .title-text { flex: 1; }
+.titlebar .title-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+  margin-left: 12px;
+}
+
+/* 内容区 */
+.content {
+  padding: 20px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+h1 { font-size: 18px; margin-bottom: 16px; }
+h2 { font-size: 13px; color: #555; margin-bottom: 8px; }
+
+.section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+button {
+  padding: 6px 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all .15s;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+button:hover { background: #e8f0fe; border-color: #4a90d9; }
+button:active { background: #d2e3fc; }
+button.active { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+button.danger { color: #d32f2f; border-color: #d32f2f; }
+button.danger:hover { background: #fde8e8; }
+
+.row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+label { font-size: 12px; color: #666; min-width: 50px; }
+input { padding: 4px 8px; border: 1px solid #d0d5dd; border-radius: 4px; font-size: 12px; }
+
+.info-box {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f0f7ff;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.6;
+}
+.info-box code { background: #e0ecf8; padding: 1px 4px; border-radius: 3px; font-family: Consolas, monospace; }
+
+#status {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #1e1e2e;
+  color: #a6e3a1;
+  border-radius: 6px;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  min-height: 60px;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  body { color: #e0e0e0; }
+  .titlebar { background: rgba(30,30,46,0.9); color: #cdd6f4; border-bottom-color: rgba(255,255,255,0.06); }
+  .section { background: #2a2a3e; }
+  button { background: #2a2a3e; color: #cdd6f4; border-color: #444; }
+  button:hover { background: #3a3a5e; border-color: #89b4fa; }
+  button.active { background: #4a90d9; color: #fff; }
+  input { background: #1e1e2e; color: #cdd6f4; border-color: #444; }
+  .info-box { background: #1e1e2e; color: #bbb; }
+  .info-box code { background: #333; color: #89b4fa; }
+}
+</style>
+</head>
+<body>
+
+<!-- 自定义标题栏 (title-overlay 模式下此区域可拖动, 右上角系统按钮由 DLL 提供) -->
+<div class="titlebar">
+  <span class="title-text">边框样式演示</span>
+  <span class="title-hint" id="currentStyle">当前: title-overlay</span>
+</div>
+
+<div class="content">
+
+<!-- 边框样式切换 -->
+<div class="section">
+  <h2>边框样式 (frame_style)</h2>
+  <div class="btn-group" id="styleButtons">
+    <button onclick="setStyle('normal')">Normal (标准)</button>
+    <button onclick="setStyle('no-titlebar')">No Titlebar (无标题栏)</button>
+    <button onclick="setStyle('borderless')">Borderless (无边框)</button>
+    <button onclick="setStyle('title-overlay')" class="active">Title Overlay (覆盖层)</button>
+  </div>
+  <div class="info-box">
+    <strong>说明：</strong><br>
+    • <code>normal</code> — 系统标准边框 + 标题栏<br>
+    • <code>no-titlebar</code> — 有边框但无标题栏，需自行实现拖动<br>
+    • <code>borderless</code> — 完全无边框无标题栏<br>
+    • <code>title-overlay</code> — 有边框 + 无标题栏 + 右上角内置最小化/最大化/关闭按钮 (Windows 专属)
+  </div>
+</div>
+
+<!-- Title Overlay 自定义 -->
+<div class="section">
+  <h2>Title Overlay 样式自定义</h2>
+  <div class="row">
+    <label>按钮高度</label>
+    <input type="number" id="overlayHeight" value="40" style="width:60px;"> px
+  </div>
+  <div class="row">
+    <label>图标颜色</label>
+    <input type="text" id="iconColor" value="#333333" style="width:80px;">
+    <input type="color" value="#333333" onchange="document.getElementById('iconColor').value=this.value" style="width:30px;height:24px;padding:0;border:none;">
+  </div>
+  <div class="row">
+    <label>悬浮背景</label>
+    <input type="text" id="hoverBg" value="#00000020" style="width:80px;">
+    <span style="font-size:11px;color:#888;">支持 #RRGGBBAA 透明度</span>
+  </div>
+  <div class="row">
+    <button onclick="applyOverlay()">应用 Overlay 样式</button>
+    <button onclick="resetOverlay()">重置默认</button>
+  </div>
+  <div class="info-box">
+    关闭按钮悬浮色固定为红色 (#E81123)，图标固定白色，不受此 API 影响。
+  </div>
+</div>
+
+<!-- 打印 -->
+<div class="section">
+  <h2>页面打印</h2>
+  <div class="btn-group">
+    <button onclick="printPage()">🖨️ 打印当前页面</button>
+  </div>
+</div>
+
+<!-- 状态输出 -->
+<div id="status">就绪，点击按钮切换边框样式...</div>
+
+</div>
+
+<script>
+const statusEl = document.getElementById('status');
+
+function log(msg) {
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  statusEl.textContent += `[${t}] ${msg}\n`;
+  statusEl.scrollTop = statusEl.scrollHeight;
+}
+
+function updateActiveButton(style) {
+  document.querySelectorAll('#styleButtons button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('#styleButtons button').forEach(btn => {
+    if (btn.textContent.toLowerCase().includes(style.replace('-', ' ').split(' ')[0])) {
+      btn.classList.add('active');
+    }
+  });
+  // 更精确匹配
+  const map = {'normal':0, 'no-titlebar':1, 'borderless':2, 'title-overlay':3};
+  const idx = map[style];
+  if (idx !== undefined) {
+    document.querySelectorAll('#styleButtons button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#styleButtons button')[idx].classList.add('active');
+  }
+  document.getElementById('currentStyle').textContent = `当前: ${style}`;
+}
+
+async function setStyle(style) {
+  try {
+    const r = await jade.invoke('setFrameStyle', style);
+    const data = typeof r === 'string' ? JSON.parse(r) : r;
+    if (data.success) {
+      updateActiveButton(style);
+      log(`切换成功: ${style}`);
+    } else {
+      log(`切换失败: ${JSON.stringify(data)}`);
+    }
+  } catch(e) {
+    log(`错误: ${e.message}`);
+  }
+}
+
+async function applyOverlay() {
+  const params = {
+    height: parseInt(document.getElementById('overlayHeight').value) || 32,
+    icon_color: document.getElementById('iconColor').value || null,
+    hover_bg: document.getElementById('hoverBg').value || null,
+  };
+  try {
+    const r = await jade.invoke('setOverlayStyle', JSON.stringify(params));
+    log(`Overlay 样式已应用: height=${params.height}, icon=${params.icon_color}, hover=${params.hover_bg}`);
+  } catch(e) {
+    log(`错误: ${e.message}`);
+  }
+}
+
+function resetOverlay() {
+  document.getElementById('overlayHeight').value = '32';
+  document.getElementById('iconColor').value = '#333333';
+  document.getElementById('hoverBg').value = '#00000020';
+  applyOverlay();
+}
+
+async function printPage() {
+  try {
+    const r = await jade.invoke('printPage', '');
+    log('打印对话框已打开');
+  } catch(e) {
+    log(`打印失败: ${e.message}`);
+  }
+}
+
+log('页面已加载，初始样式: title-overlay');
+log('标题栏区域可拖动窗口，右上角按钮由系统提供');
+</script>
+</body>
+</html>
