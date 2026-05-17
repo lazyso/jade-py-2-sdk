@@ -115,6 +115,10 @@ DLL 搜索优先级：环境变量 `JADEVIEW_DLL_PATH` → PyInstaller `_MEIPASS
 
 完整 API 文档请访问：https://jade.run/python-sdk2
 
+## AI 辅助开发
+
+仓库根目录的 [`LLM.md`](./LLM.md) 是为 AI 助手优化的精简参考文档，包含完整 API 签名、约定和高频代码模式。在 Cursor/Copilot/Claude 等工具中将其作为上下文，可直接让 AI 基于本 SDK 编写代码。
+
 ## 版本
 
 - SDK：2.0.0+26E03
