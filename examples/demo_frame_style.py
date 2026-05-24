@@ -1,4 +1,4 @@
-"""JadeView 2.0 SDK 边框样式演示
+"""JadeView 2.1.1 SDK 边框样式演示
 
 演示 frame_style 四种模式切换 + title-overlay 自定义样式。
 使用 SDK 封装 (非直接 ctypes 调用)。
@@ -90,7 +90,7 @@ def on_all_closed(window_id, data):
 
 def main():
     print("=" * 50)
-    print("  JadeView 2.0 边框样式演示")
+    print("  JadeView 2.1.1 边框样式演示")
     print("=" * 50)
 
     # 事件

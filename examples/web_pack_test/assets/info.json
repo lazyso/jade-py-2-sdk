@@ -1,0 +1,12 @@
+{
+  "name": "web_pack_test",
+  "purpose": "用于 JadePack / JAPK 手动打包测试",
+  "sdk": "jadeview-python-sdk 2.1.1",
+  "expectedEntry": "index.html",
+  "checks": [
+    "目录直接加载",
+    "JAPK 文件加载",
+    "CSS / JS / JSON 多文件资源可访问",
+    "jade.invoke IPC 可工作"
+  ]
+}

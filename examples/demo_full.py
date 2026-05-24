@@ -1,4 +1,4 @@
-"""JadeView 2.0 SDK 全功能演示
+"""JadeView 2.1.1 SDK 全功能演示
 
 覆盖全部 SDK 模块: 窗口/WebView/IPC/对话框/托盘/通知/工具函数。
 前端通过 set_protocol_service_path 加载本地 HTML。
@@ -56,12 +56,14 @@ def on_ready(window_id, data):
     # 创建主窗口 - 加载主控面板
     main_win_id = window.create_webview_window(
         f"{base_url}index.html",
-        title="JadeView 2.0 全功能演示",
+        title="JadeView 2.1.1 全功能演示",
         width=1100,
         height=800,
         theme="System",
         min_width=800,
         min_height=600,
+        # 如需允许跨域页面调用 JadeView 内部 API，可显式配置来源白名单
+        # cors_whitelist="http://localhost:3000, http://198.18.0.1:8001",
     )
     print(f"[启动] 主窗口 ID: {main_win_id}")
 
@@ -595,7 +597,7 @@ def handle_tools_is_win11(window_id, payload):
 def handle_tools_yaml_set(window_id, payload):
     tools.yaml_set("demo_config.yaml", "ui.theme", "dark")
     tools.yaml_set("demo_config.yaml", "ui.lang", "zh-CN")
-    tools.yaml_set("demo_config.yaml", "app.version", "2.0.0")
+    tools.yaml_set("demo_config.yaml", "app.version", "2.1.1")
     push_log(window_id, "YAML 已写入 demo_config.yaml")
     return "ok"
 
@@ -635,7 +637,7 @@ def handle_bench_open(window_id, payload):
     )
     wid = window.create_webview_window(
         f"{base_url}benchmark.html",
-        title="JadeView 2.0 性能测试",
+        title="JadeView 2.1.1 性能测试",
         width=900,
         height=700,
         theme="System",
@@ -927,7 +929,7 @@ def register_all():
 
 def main():
     print("=" * 50)
-    print("  JadeView 2.0 SDK 全功能演示")
+    print("  JadeView 2.1.1 SDK 全功能演示")
     print("=" * 50)
 
     register_all()

@@ -1,4 +1,4 @@
-"""JadeView 2.0 SDK 使用示例"""
+"""JadeView 2.1.1 SDK 使用示例"""
 """测试是没什么问题了，终于好用的ui框架啦！"""
 import jadeview
 from jadeview import events

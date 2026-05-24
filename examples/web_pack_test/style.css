@@ -1,0 +1,73 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", "PingFang SC", sans-serif;
+  color: #0f172a;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0ecff 50%, #f0f4ff 100%);
+}
+h1 { font-size: 20px; margin-bottom: 6px; color: #0f172a; font-weight: 600; }
+h2 { font-size: 13px; color: #334155; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; font-weight: 600; letter-spacing: 0.02em; }
+.lead { font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 14px; }
+.lead code { background: rgba(37,99,235,0.08); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #1e40af; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 14px; }
+.card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(37,99,235,0.08);
+}
+.btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+button {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #334155;
+  transition: all .15s ease;
+}
+button:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,0.04); }
+button:active { background: rgba(37,99,235,0.08); }
+button.primary {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+}
+button.primary:hover { background: linear-gradient(135deg, #1d4ed8, #1e3a8a); box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+.resource-list { list-style: none; padding: 0; }
+.resource-list li { font-size: 12px; color: #475569; padding: 5px 0; border-bottom: 1px solid #f1f5f9; }
+.resource-list li:last-child { border-bottom: none; }
+.resource-list code { background: rgba(37,99,235,0.06); padding: 1px 6px; border-radius: 4px; font-size: 11px; color: #1e40af; }
+#asset-info {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: rgba(248,250,252,0.8);
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  max-height: 120px;
+}
+#log {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  box-shadow: 0 4px 24px rgba(15,23,42,0.12);
+}

@@ -1,6 +1,6 @@
 # JadeView Python SDK
 
-[JadeView](https://jade.run) 2.0 的 Python 绑定库，基于 ctypes 封装 JadeView DLL，使用 Python 构建基于 WebView2 的 Windows 桌面应用。
+[JadeView](https://jade.run) 2.1.1 的 Python 绑定库，基于 ctypes 封装 JadeView DLL，使用 Python 构建基于 WebView2 的 Windows 桌面应用。
 
 ## 特性
 
@@ -10,6 +10,7 @@
 - 系统托盘 — 图标、提示文字、多级右键菜单
 - 系统通知 — Windows 原生通知，支持按钮和动作回调
 - WebView — 导航、JS 执行、缩放、打印、防截屏
+- 2.1.1 新能力 — `cors_whitelist` 跨域来源白名单、JAPK 内存加载 API
 - 工具函数 — 版本信息、系统路径、YAML 配置、全局热键、URL Scheme、文件关联
 - 零依赖 — 仅使用 Python 标准库
 - 自动适配 — 根据 Python 位数加载 x64/x86 DLL
@@ -74,6 +75,30 @@ def on_ready(window_id, data):
 base_url = tools.set_protocol_service_path("./app.japk")
 ```
 
+## 2.1.1 新增能力
+
+创建窗口时可设置 `cors_whitelist`，允许指定跨域页面调用 JadeView 内部 API：
+
+```python
+window.create_webview_window(
+    "http://localhost:3000",
+    title="Dev App",
+    cors_whitelist="http://localhost:3000, http://198.18.0.1:8001",
+)
+```
+
+也可以从内存直接加载 JAPK：
+
+```python
+from jadeview import japk
+
+with open("app.japk", "rb") as f:
+    payload = f.read()
+
+rc = japk.load_from_bytes(payload)
+print(rc, japk.is_loaded(), japk.get_app_signature())
+```
+
 ## 模块一览
 
 | 模块 | 功能 |
@@ -121,8 +146,8 @@ DLL 搜索优先级：环境变量 `JADEVIEW_DLL_PATH` → PyInstaller `_MEIPASS
 
 ## 版本
 
-- SDK：2.0.0+26E03
-- 兼容 JadeView：v2.0.0.26E03
+- SDK：2.1.1+26E26
+- 兼容 JadeView：v2.1.1.26E26
 
 ## 许可证
 

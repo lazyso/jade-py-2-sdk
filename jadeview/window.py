@@ -73,6 +73,7 @@ def _build_webview_settings(
     preload_js: str | None = None,
     allow_fullscreen: int = 1,
     postmessage_whitelist: str | None = None,
+    cors_whitelist: str | None = None,
 ) -> WebViewSettings:
     """构建 WebView 设置结构体"""
     s = WebViewSettings()
@@ -83,6 +84,7 @@ def _build_webview_settings(
     s.preload_js = _encode(preload_js)
     s.allow_fullscreen = allow_fullscreen
     s.postmessage_whitelist = _encode(postmessage_whitelist)
+    s.cors_whitelist = _encode(cors_whitelist)
     return s
 
 
@@ -123,6 +125,7 @@ def create_webview_window(
     preload_js: str | None = None,
     allow_fullscreen: int = 1,
     postmessage_whitelist: str | None = None,
+    cors_whitelist: str | None = None,
 ) -> int:
     """创建标准 WebView 窗口
 
@@ -154,6 +157,7 @@ def create_webview_window(
         preload_js: 预注入 JS
         allow_fullscreen: 是否允许全屏 API
         postmessage_whitelist: postMessage 白名单
+        cors_whitelist: CORS 来源白名单
 
     返回:
         window_id (>0 成功, 0 失败)
@@ -172,6 +176,7 @@ def create_webview_window(
         autoplay=autoplay, background_throttling=background_throttling,
         disable_right_click=disable_right_click, ua=ua, preload_js=preload_js,
         allow_fullscreen=allow_fullscreen, postmessage_whitelist=postmessage_whitelist,
+        cors_whitelist=cors_whitelist,
     )
     return get_dll().create_webview_window(
         _encode(url), parent_window_id, byref(opts), byref(settings)
@@ -188,6 +193,7 @@ def create_borderless_webview_window(
     preload_js: str | None = None,
     allow_fullscreen: int = 1,
     postmessage_whitelist: str | None = None,
+    cors_whitelist: str | None = None,
 ) -> int:
     """创建无边框 WebView 窗口 (可获取 HWND)
 
@@ -202,6 +208,7 @@ def create_borderless_webview_window(
         autoplay=autoplay, background_throttling=background_throttling,
         disable_right_click=disable_right_click, ua=ua, preload_js=preload_js,
         allow_fullscreen=allow_fullscreen, postmessage_whitelist=postmessage_whitelist,
+        cors_whitelist=cors_whitelist,
     )
     return get_dll().create_borderless_webview_window(_encode(url), byref(settings))
 

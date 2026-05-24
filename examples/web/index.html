@@ -2,34 +2,83 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>JadeView 2.0 SDK 全功能演示</title>
+<title>JadeView 2.1.1 SDK 全功能演示</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Segoe UI", sans-serif; background: #f0f2f5; color: #333; padding: 16px; }
-h1 { font-size: 20px; margin-bottom: 12px; color: #1a1a2e; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
-.card { background: #fff; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-.card h2 { font-size: 14px; color: #555; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+body {
+  font-family: "Segoe UI", "PingFang SC", sans-serif;
+  color: #0f172a;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0ecff 50%, #f0f4ff 100%);
+}
+h1 { font-size: 20px; margin-bottom: 14px; color: #0f172a; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+.card {
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(37,99,235,0.08);
+}
+.card h2 { font-size: 13px; color: #334155; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; font-weight: 600; letter-spacing: 0.02em; }
 .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
-button { padding: 5px 12px; border: 1px solid #d0d5dd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 12px; transition: all .15s; }
-button:hover { background: #e8f0fe; border-color: #4a90d9; }
-button:active { background: #d2e3fc; }
-button.primary { background: #4a90d9; color: #fff; border-color: #4a90d9; }
-button.primary:hover { background: #3a7bc8; }
-button.danger { color: #d32f2f; border-color: #d32f2f; }
-button.danger:hover { background: #fde8e8; }
-#log { margin-top: 12px; background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 10px; font-family: "Cascadia Code", Consolas, monospace; font-size: 11px; height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
-.log-time { color: #6c7086; }
-.log-event { color: #89b4fa; }
-.log-data { color: #a6e3a1; }
-.log-error { color: #f38ba8; }
-select, input[type=text], input[type=number] { padding: 4px 8px; border: 1px solid #d0d5dd; border-radius: 4px; font-size: 12px; }
+button {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #334155;
+  transition: all .15s ease;
+}
+button:hover { border-color: #2563eb; color: #2563eb; background: rgba(37,99,235,0.04); }
+button:active { background: rgba(37,99,235,0.08); }
+button.primary {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+}
+button.primary:hover { background: linear-gradient(135deg, #1d4ed8, #1e3a8a); box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+button.danger { color: #dc2626; border-color: #fca5a5; }
+button.danger:hover { background: #fef2f2; border-color: #dc2626; }
+#log {
+  margin-top: 14px;
+  background: #0f172a;
+  color: #cbd5e1;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  box-shadow: 0 4px 24px rgba(15,23,42,0.12);
+}
+.log-time { color: #64748b; }
+.log-event { color: #38bdf8; }
+.log-data { color: #4ade80; }
+.log-error { color: #f87171; }
+select, input[type=text], input[type=number] {
+  padding: 5px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+  background: rgba(255,255,255,0.8);
+  transition: border-color .15s;
+}
+select:focus, input[type=text]:focus, input[type=number]:focus { outline: none; border-color: #2563eb; }
 .row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-label { font-size: 12px; color: #666; min-width: 60px; }
+label { font-size: 12px; color: #64748b; min-width: 60px; }
 </style>
 </head>
 <body>
-<h1>JadeView 2.0 SDK - 全功能演示面板</h1>
+<h1>JadeView 2.1.1 SDK - 全功能演示面板</h1>
 <div class="grid">
 
 <!-- 窗口管理 -->
@@ -84,7 +133,7 @@ label { font-size: 12px; color: #666; min-width: 60px; }
   </div>
   <div class="btn-group" style="margin-top:8px;">
     <button class="primary" onclick="invoke('frame:open_overlay_demo')">打开 Overlay 演示窗口</button>
-    <button onclick="invoke('frame:print')">🖨️ 打印页面</button>
+    <button onclick="invoke('frame:print')">打印页面</button>
   </div>
 </div>
 
@@ -118,7 +167,7 @@ label { font-size: 12px; color: #666; min-width: 60px; }
   </div>
 </div>
 
-<!-- 对话框 (通过 Python SDK 调用 DLL, DLL callback 待修复, 暂只能弹出) -->
+<!-- 对话框 -->
 <div class="card">
   <h2>对话框</h2>
   <div class="btn-group">
@@ -197,7 +246,6 @@ function log(type, msg) {
   logEl.scrollTop = logEl.scrollHeight;
 }
 
-// jade.invoke 调用 Python 端注册的 IPC handler
 async function invoke(channel, data) {
   try {
     const result = await jade.invoke(channel, data || '');
@@ -207,7 +255,6 @@ async function invoke(channel, data) {
   }
 }
 
-// 监听 Python → 前端推送
 jade.on('event-log', (data) => {
   log('event', data.message || JSON.stringify(data));
 });

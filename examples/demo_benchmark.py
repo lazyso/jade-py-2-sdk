@@ -1,4 +1,4 @@
-"""JadeView 2.0 SDK 性能基准测试
+"""JadeView 2.1.1 SDK 性能基准测试
 
 测试项目:
   1. 窗口创建/销毁速度
@@ -245,7 +245,7 @@ def on_ready(window_id, data):
 
     bench_win_id = window.create_webview_window(
         f"{base_url}benchmark.html",
-        title="JadeView 2.0 性能测试",
+        title="JadeView 2.1.1 性能测试",
         width=900,
         height=700,
         theme="System",
@@ -261,7 +261,7 @@ def on_all_closed(window_id, data):
 def print_summary():
     """在控制台输出汇总"""
     print("\n" + "=" * 60)
-    print("  JadeView 2.0 性能基准测试 - 汇总报告")
+    print("  JadeView 2.1.1 性能基准测试 - 汇总报告")
     print("=" * 60)
     print(f"  JadeView: {tools.jadeview_version()}")
     print(f"  WebView2: {tools.get_webview_version()}")
@@ -271,7 +271,7 @@ def print_summary():
 
 def main():
     print("=" * 50)
-    print("  JadeView 2.0 性能基准测试")
+    print("  JadeView 2.1.1 性能基准测试")
     print("=" * 50)
 
     # 事件

@@ -6,7 +6,7 @@ import platform
 import struct
 import sys
 from ctypes import (
-    POINTER, c_char_p, c_double, c_int32, c_size_t, c_uint32, c_void_p,
+    POINTER, c_char_p, c_double, c_int32, c_size_t, c_uint8, c_uint32, c_void_p,
 )
 from pathlib import Path
 
@@ -90,6 +90,25 @@ _dll = _load_dll()
 def _setup_functions():
     """声明所有 DLL 函数的参数类型和返回类型"""
     d = _dll
+
+    # --- JAPK 内存载入 (2.1.1) ---
+    d.JadeView_set_public_key.argtypes = [c_char_p]
+    d.JadeView_set_public_key.restype = c_int32
+
+    d.JadeView_load_from_bytes.argtypes = [POINTER(c_uint8), c_size_t]
+    d.JadeView_load_from_bytes.restype = c_int32
+
+    d.JadeView_is_loaded.argtypes = []
+    d.JadeView_is_loaded.restype = c_int32
+
+    d.JadeView_get_app_signature.argtypes = []
+    d.JadeView_get_app_signature.restype = c_void_p
+
+    d.JadeView_get_signature_info.argtypes = []
+    d.JadeView_get_signature_info.restype = c_void_p
+
+    d.JadeView_unload.argtypes = []
+    d.JadeView_unload.restype = c_int32
 
     # --- 初始化与生命周期 ---
     d.JadeView_init.argtypes = [c_int32, c_char_p, c_char_p, c_char_p, c_char_p, c_int32]

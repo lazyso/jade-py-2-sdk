@@ -47,6 +47,8 @@ WEBVIEW_DOWNLOAD_STARTED = "webview-download-started"      # 下载开始 (默�
 JAVASCRIPT_RESULT = "javascript-result"      # execute_javascript 执行结果
 FILE_DROP = "file-drop"                      # 文件拖放到 WebView
 POSTMESSAGE_RECEIVED = "postmessage-received"  # 收到 postMessage
+JAPK_LOAD_SUCCESS = "japk-load-success"      # JAPK 加载成功
+JAPK_LOAD_FAILED = "japk-load-failed"        # JAPK 加载失败
 
 # ============================================================
 # 托盘事件

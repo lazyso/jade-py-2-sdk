@@ -6,7 +6,7 @@
 ## 库信息
 
 - **名称**：`jadeview`
-- **版本**：2.0.0（兼容 JadeView DLL v2.0.0.26E03）
+- **版本**：2.1.1（兼容 JadeView DLL v2.1.1.26E26）
 - **平台**：仅 Windows 10/11，Python 3.11+
 - **底层**：基于 ctypes 封装 JadeView Rust DLL，渲染层使用 WebView2
 - **依赖**：无（仅 Python 标准库）
@@ -124,6 +124,7 @@ window.create_webview_window(
     preload_js: str | None = None,
     allow_fullscreen: int = 1,
     postmessage_whitelist: str | None = None,
+    cors_whitelist: str | None = None,
 ) -> int  # window_id（>0 成功，0 失败）
 
 window.create_borderless_webview_window(url: str, **webview_settings) -> int
@@ -142,6 +143,17 @@ window.toggle_maximize_window(window_id) -> bool
 window.is_window_maximized(window_id) -> bool
 window.set_window_fullscreen(window_id, fullscreen: bool) -> bool
 window.set_window_enabled(window_id, enabled: bool) -> bool
+```
+
+### jadeview.japk
+
+```python
+japk.set_public_key(public_key: str) -> int
+japk.load_from_bytes(data: bytes | bytearray | memoryview) -> int
+japk.is_loaded() -> bool
+japk.get_app_signature() -> str | None
+japk.get_signature_info() -> dict | str | None
+japk.unload() -> int
 window.request_redraw(window_id) -> bool
 
 # === 主题与外观 ===
@@ -296,7 +308,7 @@ notification.show_notification(
 
 ```python
 # === 版本与系统 ===
-tools.jadeview_version() -> str | None        # "2.0.0.xxxx"
+tools.jadeview_version() -> str | None        # "2.1.1.xxxx"
 tools.get_webview_version() -> str | None     # WebView2 运行时版本
 tools.is_windows_11() -> bool
 tools.get_window_count() -> int

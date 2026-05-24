@@ -22,6 +22,7 @@ from .core import get_dll
 from . import dialog
 from . import events
 from . import ipc
+from . import japk
 from . import notification
 from . import tray
 from . import tools

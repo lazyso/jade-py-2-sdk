@@ -26,6 +26,7 @@ class WebViewSettings(ctypes.Structure):
         ("preload_js", c_char_p),             # 页面加载前注入的 JS
         ("allow_fullscreen", c_int32),        # 是否允许全屏 API
         ("postmessage_whitelist", c_char_p),  # postMessage 来源白名单
+        ("cors_whitelist", c_char_p),         # CORS 来源白名单
     ]
 
 

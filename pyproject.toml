@@ -1,7 +1,7 @@
 [project]
 name = "jadeview"
-version = "2.0.0"
-description = "JadeView 2.0 Python SDK - WebView2 桌面应用框架"
+version = "2.1.1"
+description = "JadeView 2.1.1 Python SDK - WebView2 桌面应用框架"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
@@ -25,6 +25,9 @@ Issues = "https://github.com/lazyso/jade-py-2-sdk/issues"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build]
+artifacts = ["*.dll"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["jadeview"]
